@@ -3,12 +3,27 @@ const input = document.getElementById("input");
 const fragment = document.createDocumentFragment();
 const msg = new SpeechSynthesisUtterance();
 
-window.speechSynthesis.onvoiceschanged = () => {
-  console.log("voices are ready");
-  const voices = window.speechSynthesis.getVoices();
-  voices.sort((a, b) => a.lang.slice(0, 2).localeCompare(b.lang.slice(0, 2)));
-  generateVoiceItem(voices);
-};
+let _speechSynthesis;
+
+function loadVoicesWhenAvailable(onComplete = () => {}) {
+  _speechSynthesis = window.speechSynthesis;
+  const voices = _speechSynthesis.getVoices();
+
+  if (voices.length !== 0) {
+    onComplete();
+  } else {
+    return setTimeout(function () {
+      loadVoicesWhenAvailable(onComplete);
+    }, 100);
+  }
+}
+
+// window.speechSynthesis.onvoiceschanged = () => {
+//   console.log("voices are ready");
+//   const voices = _speechSynthesis.getVoices();
+//   voices.sort((a, b) => a.lang.slice(0, 2).localeCompare(b.lang.slice(0, 2)));
+//   generateVoiceItem(voices);
+// };
 
 const generateVoiceItem = (voices) => {
   voices.forEach((voice, index) => {
@@ -40,8 +55,17 @@ const generateVoiceItem = (voices) => {
 
 const speak = (lang, voice) => {
   speechSynthesis.cancel();
+
   msg.voice = voice;
 
   msg.text = input.value;
   speechSynthesis.speak(msg);
 };
+
+loadVoicesWhenAvailable(() => {
+  console.log("voices are ready");
+  const voices = _speechSynthesis.getVoices();
+
+  voices.sort((a, b) => a.lang.slice(0, 2).localeCompare(b.lang.slice(0, 2)));
+  generateVoiceItem(voices);
+});
