@@ -4,6 +4,7 @@ const fragment = document.createDocumentFragment();
 const msg = new SpeechSynthesisUtterance();
 
 let _speechSynthesis;
+const debug = document.getElementById("debug");
 
 function loadVoicesWhenAvailable(onComplete = () => {}) {
   _speechSynthesis = window.speechSynthesis;
@@ -40,7 +41,7 @@ const generateVoiceItem = (voices) => {
     langSpan.innerText = `Language: ${lang}`;
     button.id = "voice-button";
     button.innerText = "Speak";
-    button.addEventListener("click", () => speak(lang, voice));
+    button.addEventListener("click", () => speak(voice, index));
     div.className = "voice-details";
     li.appendChild(nameSpan);
     div.appendChild(langSpan);
@@ -53,10 +54,12 @@ const generateVoiceItem = (voices) => {
   voicesList.appendChild(fragment);
 };
 
-const speak = (lang, voice) => {
+const speak = (voice, index) => {
+  console.log(voice);
   speechSynthesis.cancel();
 
   msg.voice = voice;
+  msg.lang = voice.lang;
 
   msg.text = input.value;
   speechSynthesis.speak(msg);
