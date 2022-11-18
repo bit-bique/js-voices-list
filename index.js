@@ -55,7 +55,6 @@ const generateVoiceItem = (voices) => {
 };
 
 const speak = (voice, index) => {
-  console.log(voice);
   speechSynthesis.cancel();
 
   msg.voice = voice;
